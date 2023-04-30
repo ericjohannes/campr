@@ -11,20 +11,24 @@ place_ids = [
         "name":'Tettegouche State Park',
     },
     {
-        "id":"",
-        "name":"",
+        "id":"118",
+        "name":"Gooseberry Falls State Park",
     },
     {
-        "id":"",
-        "name":"",
+        "id": "128",
+        "name": "Split Rock Creek State Park",
     },
     {
-        "id":"",
-        "name":"",
+        "id":"117",
+        "name":"George H. Crosby Manitou State Park",
     },
     {
-        "id":"",
-        "name":"",
+        "id":"103",
+        "name":"Temperance River State Park",
+    },
+     {
+        "id":"68",
+        "name":"Cascade River State Park",
     },
 ]
 
@@ -125,6 +129,13 @@ def check_availability(data):
     else:
         return data['SelectedPlace']['Available']
 
+def check_name(data):
+    if "SelectedPlace" not in data:
+        return None
+    elif 'Name' not in data['SelectedPlace']:
+        return None
+    else:
+        return data['SelectedPlace']['Name']
 if __name__ == '__main__':
     start_date = nearest_friday()
     end_date = "09-15-2023"
