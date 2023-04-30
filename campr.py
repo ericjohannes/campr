@@ -7,8 +7,8 @@ post_url = 'https://mnrdr.usedirect.com' # /minnesotardr/rdr/search/place
 
 place_ids = [
     {
-        "id":"",
-        "name":"",
+        "id":"104",
+        "name":'Tettegouche State Park',
     },
     {
         "id":"",
@@ -26,7 +26,6 @@ place_ids = [
         "id":"",
         "name":"",
     },
-
 ]
 
 available_sites = []
