@@ -1,8 +1,57 @@
 import json
 import requests
+from datetime import datetime, timedelta
 
 base_url = 'https://reservemn.usedirect.com'
 post_url = 'https://mnrdr.usedirect.com' # /minnesotardr/rdr/search/place
+
+place_ids = [
+    {
+        "id":"",
+        "name":"",
+    },
+    {
+        "id":"",
+        "name":"",
+    },
+    {
+        "id":"",
+        "name":"",
+    },
+    {
+        "id":"",
+        "name":"",
+    },
+    {
+        "id":"",
+        "name":"",
+    },
+
+]
+
+available_sites = []
+
+def nearest_friday():
+    """
+    Returns the nearest Friday to today in the format "MM-DD-YYYY".
+    """
+    today = datetime.now().date()
+    days_to_friday = (4 - today.weekday()) % 7
+    friday = today + timedelta(days=days_to_friday)
+    return friday.strftime("%m-%d-%Y")
+
+def generate_dates(start_date, end_date):
+    """
+    Generates dates seven days apart in the format "MM-DD-YYYY" between the given start and end dates.
+    """
+    dates = []
+    current_date = datetime.strptime(start_date, "%m-%d-%Y")
+    end_date = datetime.strptime(end_date, "%m-%d-%Y")
+    while current_date <= end_date:
+        dates.append(current_date.strftime("%m-%d-%Y"))
+        current_date += timedelta(days=7)
+    return dates
+
 def get_og_data():
     og_url = f'{base_url}/MinnesotaWeb/'
 
@@ -47,7 +96,7 @@ def post_types():
         "HighlightedPlaceId":0,
         "StartDate":"07-01-2023",
         "Nights":"2",
-        "CountNearby":True,
+        "CountNearby":False,
         "NearbyLimit":100,
         "NearbyOnlyAvailable":False,
         "NearbyCountLimit":10,
@@ -69,7 +118,18 @@ def post_types():
     else:
         return dict()
 
+def check_availability(data):
+    if "SelectedPlace" not in data:
+        return None
+    elif 'Available' not in data['SelectedPlace']:
+        return None
+    else:
+        return data['SelectedPlace']['Available']
+
 if __name__ == '__main__':
+    start_date = nearest_friday()
+    end_date = "09-15-2023"
+    dates = generate_dates(start_date, end_date)
     data = post_types()
 
-    print(data.text)
+    print(data)
