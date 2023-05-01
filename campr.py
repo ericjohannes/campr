@@ -152,8 +152,7 @@ if __name__ == '__main__':
             if check_availability(data):
                 name = check_name(data)
                 available_sites.append({
-                    "found_name": name,
-                    "expected_name": p['name'],
+                    "name": name,
                     "date": d
                 })
 
