@@ -70,8 +70,12 @@ def get_facilites(needle):
     else:
         return dict()
 
-def post_types():
-
+def post_types(place_id, start_date):
+    """
+    place_id: string of numbers representing the place id of a parkr
+    start_date: string of date like "MM-DD-YYY"
+    Gets availability data for a park for two nights starting on one date.
+    """
     headers = {
         # ":authority": "mnrdr.usedirect.com",
         # ":method": "POST",
@@ -93,11 +97,11 @@ def post_types():
         "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
 }
     payload = {
-        "PlaceId":"104",
+        "PlaceId": place_id,
         "Latitude":0,
         "Longitude":0,
         "HighlightedPlaceId":0,
-        "StartDate":"07-01-2023",
+        "StartDate": start_date,
         "Nights":"2",
         "CountNearby":False,
         "NearbyLimit":100,
@@ -136,10 +140,22 @@ def check_name(data):
         return None
     else:
         return data['SelectedPlace']['Name']
+
+
 if __name__ == '__main__':
     start_date = nearest_friday()
     end_date = "09-15-2023"
     dates = generate_dates(start_date, end_date)
-    data = post_types()
+    for d in dates:
+        for p in place_ids:
+            data = post_types(p['id'], d)
+            if check_availability(data):
+                name = check_name(data)
+                available_sites.append({
+                    "found_name": name,
+                    "expected_name": p['name'],
+                    "date": d
+                })
 
-    print(data)
+
+    print(available_sites)
