@@ -1,6 +1,6 @@
 import json
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 base_url = 'https://reservemn.usedirect.com'
 post_url = 'https://mnrdr.usedirect.com' # /minnesotardr/rdr/search/place
@@ -141,6 +141,14 @@ def check_name(data):
     else:
         return data['SelectedPlace']['Name']
 
+def save_results(data):
+    """
+    save a json of results based on today's date
+    """
+    today = date.today().strftime("%m-%d-%Y")
+    filename = f"results/found_{today}.json"
+    with open(filename, "w") as f:
+        json.dump(data, f)
 
 if __name__ == '__main__':
     start_date = nearest_friday()
@@ -157,4 +165,4 @@ if __name__ == '__main__':
                 })
 
 
-    print(available_sites)
+    save_results(available_sites)
