@@ -15,21 +15,22 @@ place_ids = [
         "name":"Gooseberry Falls State Park",
     },
     {
-        "id": "128",
-        "name": "Split Rock Creek State Park",
+        "id": "70",
+        "name": "Split Rock Lighthouse State Park",
     },
-    {
-        "id":"117",
-        "name":"George H. Crosby Manitou State Park",
-    },
-    {
-        "id":"103",
-        "name":"Temperance River State Park",
-    },
-     {
-        "id":"68",
-        "name":"Cascade River State Park",
-    },
+    # these are too far for us
+    # {
+    #     "id":"117",
+    #     "name":"George H. Crosby Manitou State Park",
+    # },
+    # {
+    #     "id":"103",
+    #     "name":"Temperance River State Park",
+    # },
+    #  {
+    #     "id":"68",
+    #     "name":"Cascade River State Park",
+    # },
 ]
 
 available_sites = []
