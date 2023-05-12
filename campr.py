@@ -1,5 +1,8 @@
+import os
 import json
 import requests
+from sendgrid.helpers.mail import Mail
+from sendgrid import SendGridAPIClient
 from datetime import datetime, timedelta, date
 
 base_url = 'https://reservemn.usedirect.com'
@@ -142,6 +145,58 @@ def check_name(data):
     else:
         return data['SelectedPlace']['Name']
 
+def make_tr(data_row):
+    return f"<tr><td>{data_row['date']}</td><td>{data_row['name']}</td></tr>"
+
+def send_email(data, start_date, end_date, places):
+    with open('./secret.json', 'r') as f:
+        secret = json.load(f)
+
+        # initialize as if no sites found
+        subject = "No campsites found"
+        html_content = '<p>Could not find any campsites available</p>'
+
+        if len(data):
+            subject = "Campsites found!"
+            location_names = ''
+            for i, p in enumerate(places):
+                if i == (len(places)-1): # last one
+                    location_names += f"and {p['name']}."
+                else:
+                    location_names += f"{p['name']}, "
+            
+            table_rows = [make_tr(row) for row in data]
+            table_rows = ''.join(table_rows)
+        
+            html_content = f"""
+                <h1>Found campsites</h1>
+                <p>Searched between {start_date} and {end_date}.</p>
+                <p>Looked at: {location_names}</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Park</th>
+                        </tr>
+                    </thead>
+                    <tbody>{table_rows}</tbody>
+                </table>
+            """
+        message = Mail(
+            from_email='ericjohannesblom@gmail.com',
+            to_emails='ericjohannesblom@gmail.com',
+            subject=subject,
+            html_content=html_content
+        )
+        try:
+            sg = SendGridAPIClient(api_key=secret['SENDGRID_API_KEY'])
+            response = sg.send(message)
+            print(response.status_code)
+            print(response.body)
+            print(response.headers)
+        except Exception as e:
+            print(e)
+
 def save_results(data):
     """
     save a json of results based on today's date
@@ -165,5 +220,5 @@ if __name__ == '__main__':
                     "date": d
                 })
 
-
-    save_results(available_sites)
+    send_email(available_sites, start_date, end_date, place_ids)
+    # save_results(available_sites)

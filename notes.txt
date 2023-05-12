@@ -1,0 +1,8 @@
+followed this to get started with github actions and lambda: https://aws.amazon.com/blogs/compute/using-github-actions-to-deploy-serverless-applications/
+
+road map to convert to github aws sam, lambda function
+1. init sam in this repo
+2. look at how to store secrets in aws, store secrets for sendgrid in aws
+3. move python functions to python file that runs on lambda
+4. update requirements.txt to include what I have in pipfile
+5. make python script trigger based on lambda triggers
