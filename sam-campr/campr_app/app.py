@@ -1,6 +1,6 @@
 import json
-from campr import nearest_friday, generate_dates, check_availability, post_types, send_email, check_availability, check_name
-# import requests
+from campr import nearest_friday, generate_dates, check_availability, post_types, send_email, check_availability, check_name, get_secret
+
 base_url = 'https://reservemn.usedirect.com'
 
 place_ids = [
@@ -76,7 +76,8 @@ def lambda_handler(event, context):
                     "date": d
                 })
 
-    # send_email(available_sites, start_date, end_date, place_ids)
+    sendgrid_api_key = get_secret()
+    send_email(available_sites, start_date, end_date, place_ids, sendgrid_api_key)
 
     return {
         "statusCode": 200,

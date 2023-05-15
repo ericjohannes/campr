@@ -2,7 +2,17 @@ followed this to get started with github actions and lambda: https://aws.amazon.
 
 road map to convert to github aws sam, lambda function
 1. init sam in this repo
-2. look at how to store secrets in aws, store secrets for sendgrid in aws
+2. look at how to store secrets in aws, store secrets for sendgrid in aws https://medium.com/nerd-for-tech/how-to-use-aws-secret-manager-and-ses-with-aws-sam-a93bb359d45a 
 3. move python functions to python file that runs on lambda
 4. update requirements.txt to include what I have in pipfile
 5. make python script trigger based on lambda triggers
+
+notes on steps
+1. ran ` sam init -r python3.10 -n sam-campr --app-template "hello-world"`
+hello world app works when i do a local invoke of that function
+
+3. moved python into app and it's working! had to instlal python3.10 locally
+not set up to email yet bc of secrets
+4. this is done too, had to to make my script work inside the app
+
+2. stored secret in aws, tried ot add it. addings stuff to requirements.txt to handle secrets
