@@ -1,7 +1,37 @@
 import json
-
+from campr import nearest_friday, generate_dates, check_availability, post_types, send_email, check_availability, check_name
 # import requests
+base_url = 'https://reservemn.usedirect.com'
 
+place_ids = [
+    {
+        "id":"104",
+        "name":'Tettegouche State Park',
+    },
+    {
+        "id":"118",
+        "name":"Gooseberry Falls State Park",
+    },
+    {
+        "id": "70",
+        "name": "Split Rock Lighthouse State Park",
+    },
+    # these are too far for us
+    # {
+    #     "id":"117",
+    #     "name":"George H. Crosby Manitou State Park",
+    # },
+    # {
+    #     "id":"103",
+    #     "name":"Temperance River State Park",
+    # },
+    #  {
+    #     "id":"68",
+    #     "name":"Cascade River State Park",
+    # },
+]
+
+available_sites = []
 
 def lambda_handler(event, context):
     """Sample pure Lambda function
@@ -33,10 +63,25 @@ def lambda_handler(event, context):
 
     #     raise e
 
+    start_date = nearest_friday()
+    end_date = "09-15-2023"
+    dates = generate_dates(start_date, end_date)
+    for d in dates:
+        for p in place_ids:
+            data = post_types(p['id'], d)
+            if check_availability(data):
+                name = check_name(data)
+                available_sites.append({
+                    "name": name,
+                    "date": d
+                })
+
+    # send_email(available_sites, start_date, end_date, place_ids)
+
     return {
         "statusCode": 200,
         "body": json.dumps({
-            "message": "hello world",
+            "message": available_sites,
             # "location": ip.text.replace("\n", "")
         }),
     }

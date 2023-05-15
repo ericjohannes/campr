@@ -1,42 +1,9 @@
-import os
 import json
 import requests
 from sendgrid.helpers.mail import Mail
 from sendgrid import SendGridAPIClient
 from datetime import datetime, timedelta, date
 
-base_url = 'https://reservemn.usedirect.com'
-post_url = 'https://mnrdr.usedirect.com' # /minnesotardr/rdr/search/place
-
-place_ids = [
-    {
-        "id":"104",
-        "name":'Tettegouche State Park',
-    },
-    {
-        "id":"118",
-        "name":"Gooseberry Falls State Park",
-    },
-    {
-        "id": "70",
-        "name": "Split Rock Lighthouse State Park",
-    },
-    # these are too far for us
-    # {
-    #     "id":"117",
-    #     "name":"George H. Crosby Manitou State Park",
-    # },
-    # {
-    #     "id":"103",
-    #     "name":"Temperance River State Park",
-    # },
-    #  {
-    #     "id":"68",
-    #     "name":"Cascade River State Park",
-    # },
-]
-
-available_sites = []
 
 def nearest_friday():
     """
@@ -80,6 +47,8 @@ def post_types(place_id, start_date):
     start_date: string of date like "MM-DD-YYY"
     Gets availability data for a park for two nights starting on one date.
     """
+    post_url = 'https://mnrdr.usedirect.com' # /minnesotardr/rdr/search/place
+
     headers = {
         # ":authority": "mnrdr.usedirect.com",
         # ":method": "POST",
