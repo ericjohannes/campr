@@ -1,0 +1,4 @@
+requests
+sendgrid
+boto3
+botocore
