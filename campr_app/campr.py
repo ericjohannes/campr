@@ -119,53 +119,51 @@ def make_tr(data_row):
     return f"<tr><td>{data_row['date']}</td><td>{data_row['name']}</td></tr>"
 
 def send_email(data, start_date, end_date, places, sendgrid_api_key):
-    with open('./secret.json', 'r') as f:
-        secret = json.load(f)
 
-        # initialize as if no sites found
-        subject = "No campsites found"
-        html_content = '<p>Could not find any campsites available</p>'
+    # initialize as if no sites found
+    subject = "No campsites found"
+    html_content = '<p>Could not find any campsites available</p>'
 
-        if len(data):
-            subject = "Campsites found!"
-            location_names = ''
-            for i, p in enumerate(places):
-                if i == (len(places)-1): # last one
-                    location_names += f"and {p['name']}."
-                else:
-                    location_names += f"{p['name']}, "
-            
-            table_rows = [make_tr(row) for row in data]
-            table_rows = ''.join(table_rows)
+    if len(data):
+        subject = "Campsites found!"
+        location_names = ''
+        for i, p in enumerate(places):
+            if i == (len(places)-1): # last one
+                location_names += f"and {p['name']}."
+            else:
+                location_names += f"{p['name']}, "
         
-            html_content = f"""
-                <h1>Found campsites</h1>
-                <p>Searched between {start_date} and {end_date}.</p>
-                <p>Looked at: {location_names}</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Park</th>
-                        </tr>
-                    </thead>
-                    <tbody>{table_rows}</tbody>
-                </table>
-            """
-        message = Mail(
-            from_email='ericjohannesblom@gmail.com',
-            to_emails='ericjohannesblom@gmail.com',
-            subject=subject,
-            html_content=html_content
-        )
-        try:
-            sg = SendGridAPIClient(api_key=sendgrid_api_key)
-            response = sg.send(message)
-            print(response.status_code)
-            print(response.body)
-            print(response.headers)
-        except Exception as e:
-            print(e)
+        table_rows = [make_tr(row) for row in data]
+        table_rows = ''.join(table_rows)
+    
+        html_content = f"""
+            <h1>Found campsites</h1>
+            <p>Searched between {start_date} and {end_date}.</p>
+            <p>Looked at: {location_names}</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Park</th>
+                    </tr>
+                </thead>
+                <tbody>{table_rows}</tbody>
+            </table>
+        """
+    message = Mail(
+        from_email='ericjohannesblom@gmail.com',
+        to_emails='ericjohannesblom@gmail.com',
+        subject=subject,
+        html_content=html_content
+    )
+    try:
+        sg = SendGridAPIClient(api_key=sendgrid_api_key)
+        response = sg.send(message)
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
+    except Exception as e:
+        print(e)
 
 def save_results(data):
     """
