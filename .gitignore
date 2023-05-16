@@ -1,5 +1,6 @@
 results/*.json
 secret.json
+.aws-sam/
 
 results/*.json
 secret.json
