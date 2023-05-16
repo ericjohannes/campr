@@ -77,6 +77,8 @@ def lambda_handler(event, context):
                 })
 
     sendgrid_api_key = get_secret()
+    print('len', len(sendgrid_api_key))
+    print('char', sendgrid_api_key[-1])
     send_email(available_sites, start_date, end_date, place_ids, sendgrid_api_key)
 
     return {
