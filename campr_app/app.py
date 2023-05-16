@@ -1,37 +1,8 @@
 import json
-from campr import nearest_friday, generate_dates, check_availability, post_types, send_email, check_availability, check_name, get_secret
-
-base_url = 'https://reservemn.usedirect.com'
-
-place_ids = [
-    {
-        "id":"104",
-        "name":'Tettegouche State Park',
-    },
-    {
-        "id":"118",
-        "name":"Gooseberry Falls State Park",
-    },
-    {
-        "id": "70",
-        "name": "Split Rock Lighthouse State Park",
-    },
-    # these are too far for us
-    # {
-    #     "id":"117",
-    #     "name":"George H. Crosby Manitou State Park",
-    # },
-    # {
-    #     "id":"103",
-    #     "name":"Temperance River State Park",
-    # },
-    #  {
-    #     "id":"68",
-    #     "name":"Cascade River State Park",
-    # },
-]
+from campr import nearest_friday, generate_dates, check_availability, post_types, send_email, check_availability, check_name, get_secret, place_ids
 
 available_sites = []
+
 
 def lambda_handler(event, context):
     """Sample pure Lambda function

@@ -6,6 +6,37 @@ from sendgrid import SendGridAPIClient
 from botocore.exceptions import ClientError
 from datetime import datetime, timedelta, date
 
+base_url = 'https://reservemn.usedirect.com'
+
+place_ids = [
+    {
+        "id":"104",
+        "name":'Tettegouche State Park',
+    },
+    {
+        "id":"118",
+        "name":"Gooseberry Falls State Park",
+    },
+    {
+        "id": "70",
+        "name": "Split Rock Lighthouse State Park",
+    },
+    # these are too far for us
+    # {
+    #     "id":"117",
+    #     "name":"George H. Crosby Manitou State Park",
+    # },
+    # {
+    #     "id":"103",
+    #     "name":"Temperance River State Park",
+    # },
+    #  {
+    #     "id":"68",
+    #     "name":"Cascade River State Park",
+    # },
+]
+
+
 def nearest_friday():
     """
     Returns the nearest Friday to today in the format "MM-DD-YYYY".
@@ -209,10 +240,11 @@ def get_secret():
         get_secret_value_response = client.get_secret_value(
             SecretId=secret_name
         )
+        secret_dict = json.loads(get_secret_value_response['SecretString'])
     except ClientError as e:
         # For a list of exceptions thrown, see
         # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
         raise e
 
     # Decrypts secret using the associated KMS key.
-    return get_secret_value_response['SecretString']
+    return secret_dict[secret_name]
