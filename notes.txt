@@ -16,3 +16,11 @@ not set up to email yet bc of secrets
 4. this is done too, had to to make my script work inside the app
 
 2. stored secret in aws, tried ot add it. addings stuff to requirements.txt to handle secrets
+fixed a bug in accessing actual secret
+had to add permissions to lambda function's role to read secret
+
+5. steps: 
+"add trigger"
+"eventbridge (cloudwatch events)"
+"create a new rule"
+sked expression: cron(3 4,10,16,22 * * ? *)
