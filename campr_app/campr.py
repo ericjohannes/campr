@@ -1,9 +1,12 @@
 import json
+import boto3
 import requests
+from sendgrid.helpers.mail import Mail
+from sendgrid import SendGridAPIClient
+from botocore.exceptions import ClientError
 from datetime import datetime, timedelta, date
 
 base_url = 'https://reservemn.usedirect.com'
-post_url = 'https://mnrdr.usedirect.com' # /minnesotardr/rdr/search/place
 
 place_ids = [
     {
@@ -33,7 +36,6 @@ place_ids = [
     # },
 ]
 
-available_sites = []
 
 def nearest_friday():
     """
@@ -77,6 +79,8 @@ def post_types(place_id, start_date):
     start_date: string of date like "MM-DD-YYY"
     Gets availability data for a park for two nights starting on one date.
     """
+    post_url = 'https://mnrdr.usedirect.com' # /minnesotardr/rdr/search/place
+
     headers = {
         # ":authority": "mnrdr.usedirect.com",
         # ":method": "POST",
@@ -142,6 +146,56 @@ def check_name(data):
     else:
         return data['SelectedPlace']['Name']
 
+def make_tr(data_row):
+    return f"<tr><td>{data_row['date']}</td><td>{data_row['name']}</td></tr>"
+
+def send_email(data, start_date, end_date, places, sendgrid_api_key):
+
+    # initialize as if no sites found
+    subject = "No campsites found"
+    html_content = '<p>Could not find any campsites available</p>'
+
+    if len(data):
+        subject = "Campsites found!"
+        location_names = ''
+        for i, p in enumerate(places):
+            if i == (len(places)-1): # last one
+                location_names += f"and {p['name']}."
+            else:
+                location_names += f"{p['name']}, "
+        
+        table_rows = [make_tr(row) for row in data]
+        table_rows = ''.join(table_rows)
+    
+        html_content = f"""
+            <h1>Found campsites</h1>
+            <p>Searched between {start_date} and {end_date}.</p>
+            <p>Looked at: {location_names}</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Park</th>
+                    </tr>
+                </thead>
+                <tbody>{table_rows}</tbody>
+            </table>
+        """
+    message = Mail(
+        from_email='ericjohannesblom@gmail.com',
+        to_emails='ericjohannesblom@gmail.com',
+        subject=subject,
+        html_content=html_content
+    )
+    try:
+        sg = SendGridAPIClient(api_key=sendgrid_api_key)
+        response = sg.send(message)
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
+    except Exception as e:
+        print(e)
+
 def save_results(data):
     """
     save a json of results based on today's date
@@ -151,19 +205,46 @@ def save_results(data):
     with open(filename, "w") as f:
         json.dump(data, f)
 
-if __name__ == '__main__':
-    start_date = nearest_friday()
-    end_date = "09-15-2023"
-    dates = generate_dates(start_date, end_date)
-    for d in dates:
-        for p in place_ids:
-            data = post_types(p['id'], d)
-            if check_availability(data):
-                name = check_name(data)
-                available_sites.append({
-                    "name": name,
-                    "date": d
-                })
+# if __name__ == '__main__':
+#     start_date = nearest_friday()
+#     end_date = "09-15-2023"
+#     dates = generate_dates(start_date, end_date)
+#     for d in dates:
+#         for p in place_ids:
+#             data = post_types(p['id'], d)
+#             if check_availability(data):
+#                 name = check_name(data)
+#                 available_sites.append({
+#                     "name": name,
+#                     "date": d
+#                 })
+
+#     send_email(available_sites, start_date, end_date, place_ids)
+    # save_results(available_sites)
 
 
-    save_results(available_sites)
+
+def get_secret():
+
+    secret_name = "SENDGRID_API_KEY"
+    region_name = "us-east-1"
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+        secret_dict = json.loads(get_secret_value_response['SecretString'])
+    except ClientError as e:
+        # For a list of exceptions thrown, see
+        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+        raise e
+
+    # Decrypts secret using the associated KMS key.
+    return secret_dict[secret_name]

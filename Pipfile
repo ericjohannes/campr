@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 requests = "*"
+sendgrid = "*"
+boto3 = "*"
+botocore = "*"
 
 [dev-packages]
 
